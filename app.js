@@ -5,7 +5,8 @@ bodyParser = require("body-parser"),
 expressSanitizer = require("express-sanitizer"),
 methodOverride = require('method-override');
 
-mongoose.connect("mongodb://localhost/todo_app");
+// mongoose.connect("mongodb://localhost/todo_app");
+mongoose.connect("mongodb://bergy:password@ds215089.mlab.com:15089/todo-ajax");
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(expressSanitizer());
@@ -27,7 +28,7 @@ app.get("/todos", function(req, res){
     if(err){
       console.log(err);
     } else {
-      res.render("index", {todos: todos}); 
+      res.render("index", { todos: todos }); 
     }
   })
 });
@@ -43,7 +44,7 @@ app.post("/todos", function(req, res){
     if(err){
       res.render("new");
     } else {
-        res.redirect("/todos");
+      res.json(newTodo);
     }
   });
 });
@@ -60,22 +61,25 @@ app.get("/todos/:id/edit", function(req, res){
 });
 
 app.put("/todos/:id", function(req, res){
- Todo.findByIdAndUpdate(req.params.id, req.body.todo, function(err, todo){
+ Todo.findByIdAndUpdate(req.params.id, req.body.todo, {new: true}, function(err, todo){
    if(err){
      console.log(err);
    } else {
-      res.redirect('/');
+     res.json(todo);
    }
  });
 });
 
 app.delete("/todos/:id", function(req, res){
- Todo.findById(req.params.id, function(err, todo){
+ Todo.findByIdAndRemove(req.params.id, function(err, todo){
    if(err){
      console.log(err);
    } else {
-      todo.remove();
-      res.redirect("/todos");
+      if (req.xhr){
+        res.json(todo);
+      } else {
+        res.redirect("/todos");
+      }
    }
  }); 
 });
