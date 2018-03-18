@@ -14,12 +14,19 @@ $('#new-todo').on('submit', function(e){
             $('#todo-list').append(
             `
                 <li class="list-group-item">
+                    <form class="edit-item-form" action="/todos/${data._id}" method="POST">
+                        <div class="form-group">
+                            <label for="${data._id}">Item Text</label>
+                            <input id="${data._id}" type="text" value="${data.text}" name="todo[text]" class="form-control">
+                        </div>
+                        <button class="btn btn-primary">Update Item</button>
+                    </form>
 					<span class="lead">
 						${data.text}
 					</span>
 					<div class="pull-right">
-						<a href="/todos/${data._id}/edit" class="btn btn-sm btn-warning">Edit</a>
-						<form style="display: inline" method="POST" action="/todos/${data._id}">
+                        <button class="btn btn-sm btn-warning edit-btn">Edit</button>
+						<form class="delete-item-form" style="display: inline" method="POST" action="/todos/${data._id}">
 							<button type="submit" class="btn btn-sm btn-danger">Delete</button>
 						</form>
 					</div>
@@ -40,6 +47,7 @@ $('#todo-list').on('click', '.edit-btn', function(){
     $(this).parent().siblings('.edit-item-form').toggle();
 });
 
+// todo-list is selected because its on the page before adding list item
 $('#todo-list').on('submit', '.edit-item-form', function(e){
     e.preventDefault();
     var formData = $(this).serialize();
@@ -55,8 +63,8 @@ $('#todo-list').on('submit', '.edit-item-form', function(e){
                 `
                     <form class="edit-item-form" action="/todos/${data._id}" method="POST">
 						<div class="form-group">
-							<label>Item Text</label>
-							<input type="text" value="${data.text}" name="todo[text]" class="form-control">
+							<label for="${data._id}">Item Text</label>
+							<input id="${data._id}" type="text" value="${data.text}" name="todo[text]" class="form-control">
 						</div>
 						<button class="btn btn-primary">Update Item</button>
 					</form>
@@ -65,7 +73,7 @@ $('#todo-list').on('submit', '.edit-item-form', function(e){
 					</span>
 					<div class="pull-right">
 						<button class="btn btn-sm btn-warning edit-btn">Edit</button>
-						<form style="display: inline" method="POST" action="/todos/${data._id}">
+						<form class="delete-item-form" style="display: inline" method="POST" action="/todos/${data._id}">
 							<button type="submit" class="btn btn-sm btn-danger">Delete</button>
 						</form>
 					</div>
@@ -78,17 +86,22 @@ $('#todo-list').on('submit', '.edit-item-form', function(e){
 
 });
 
-
-// DELETE TODO
-// $('form').on('submit', function (e) {
-//     e.preventDefault();
-//     var formAction = $(this).attr('action');
-//     $.ajax({
-//         url: formAction,
-//         type: 'DELETE',
-//         success: function (data) {
-//             console.log(data);
-//         }
-//     });
-
-// });
+//DELETE TODO
+$('#todo-list').on('submit', '.delete-item-form', function(e){
+    e.preventDefault();
+    var confirmResponse = confirm('are you sure you want to delete?');
+    if (confirmResponse) {
+        var formAction = $(this).attr('action');
+        var $itemToDelete = $(this).closest('.list-group-item');
+        $.ajax({
+            url: formAction,
+            type: 'DELETE',
+            itemToDelete: $itemToDelete,
+            success: function (data) {
+                this.itemToDelete.remove();
+            }
+        });
+    } else {
+        this.find('button').blur();
+    }
+});    

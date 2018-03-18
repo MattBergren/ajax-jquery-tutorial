@@ -19,10 +19,12 @@ var todoSchema = new mongoose.Schema({
 
 var Todo = mongoose.model("Todo", todoSchema);
 
+// REDIRECT to homepage
 app.get("/", function(req, res){
   res.redirect("/todos");
 });
 
+// SHOW
 app.get("/todos", function(req, res){
   Todo.find({}, function(err, todos){
     if(err){
@@ -33,33 +35,20 @@ app.get("/todos", function(req, res){
   })
 });
 
-app.get("/todos/new", function(req, res){
- res.render("new"); 
-});
-
+// NEW
 app.post("/todos", function(req, res){
  req.body.todo.text = req.sanitize(req.body.todo.text);
  var formData = req.body.todo;
  Todo.create(formData, function(err, newTodo){
     if(err){
-      res.render("new");
+      console.log(err);
     } else {
       res.json(newTodo);
     }
   });
 });
 
-app.get("/todos/:id/edit", function(req, res){
- Todo.findById(req.params.id, function(err, todo){
-   if(err){
-     console.log(err);
-     res.redirect("/")
-   } else {
-      res.render("edit", {todo: todo});
-   }
- });
-});
-
+// UPDATE
 app.put("/todos/:id", function(req, res){
  Todo.findByIdAndUpdate(req.params.id, req.body.todo, {new: true}, function(err, todo){
    if(err){
@@ -70,16 +59,13 @@ app.put("/todos/:id", function(req, res){
  });
 });
 
+// DELETE
 app.delete("/todos/:id", function(req, res){
  Todo.findByIdAndRemove(req.params.id, function(err, todo){
    if(err){
-     console.log(err);
+      console.log(err);
    } else {
-      if (req.xhr){
-        res.json(todo);
-      } else {
-        res.redirect("/todos");
-      }
+      res.json(todo);
    }
  }); 
 });

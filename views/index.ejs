@@ -8,8 +8,8 @@
 				<li class="list-group-item">
 					<form class="edit-item-form" action="/todos/<%=todo._id%>" method="POST">
 						<div class="form-group">
-							<label>Item Text</label>
-							<input type="text" value="<%= todo.text %>" name="todo[text]" class="form-control">
+							<label for="update<%=todo._id%>">Item Text</label>
+							<input type="text" value="<%= todo.text %>" name="todo[text]" class="form-control" id="update<%=todo._id%>">
 						</div>
 						<button class="btn btn-primary">Update Item</button>
 					</form>
@@ -18,7 +18,7 @@
 					</span>
 					<div class="pull-right">
 						<button class="btn btn-sm btn-warning edit-btn">Edit</button>
-						<form style="display: inline" method="POST" action="/todos/<%=todo._id%>">
+						<form class="delete-item-form" style="display: inline" method="POST" action="/todos/<%=todo._id%>">
 							<button type="submit" class="btn btn-sm btn-danger">Delete</button>
 						</form>
 					</div>
@@ -31,8 +31,8 @@
 			<h1>Add Item</h1>
 			<form id="new-todo" action="/todos" method="POST">
 				<div class="form-group">
-					<label>Item Text</label>
-					<input type="text" name="todo[text]" class="form-control">
+					<label for="add">Item Text</label>
+					<input type="text" name="todo[text]" class="form-control" id="add">
 				</div>
 				<button class="btn btn-primary">Create Item</button>
 			</form>
